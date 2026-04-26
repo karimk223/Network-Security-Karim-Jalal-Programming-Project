@@ -14,6 +14,26 @@ Routes:
   GET  /admin         - Security dashboard (events log)
   POST /api/logout
 """
+import sys
+
+if sys.version_info < (3, 10):
+    print("\nERROR: Python 3.10 or higher is required.")
+    print("Please follow README.md under 'Running the Project'.\n")
+    sys.exit(1)
+
+try:
+    import cv2
+    import mediapipe
+except ImportError:
+    print("\nERROR: Required dependencies are not installed.")
+    print("Run these commands:")
+    print("  cd biometric_auth")
+    print("  python3 -m venv venv")
+    print("  source venv/bin/activate")
+    print("  pip install -r requirements.txt")
+    print("  python app.py\n")
+    sys.exit(1)
+
 import os
 import random
 import secrets
@@ -378,6 +398,8 @@ if __name__ == '__main__':
     print('=' * 60)
     print('CSC 437 - Biometric Authentication System')
     print('=' * 60)
+    print('Setup reminder: Python 3.10+ is required.')
+    print('If the server does not start, follow README.md instructions.')
     print(f'Running at: http://127.0.0.1:5000')
     print(f'Data dir:   {Config.DATA_DIR}')
     print(f'Logs dir:   {Config.LOGS_DIR}')
