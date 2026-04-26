@@ -139,7 +139,7 @@ python3 --version
 python3 -m venv venv
 
 # Activate it
-source venv/bin/activate        # Windows: venv\Scripts\activate
+venv\Scripts\activate     # Mac: source venv/bin/activate
 
 # Install dependencies
 pip install --upgrade pip
