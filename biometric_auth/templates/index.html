@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+  <div class="hero">
+    <div class="eyebrow">▸ multi-factor biometric authentication</div>
+    <h1>Face recognition with active liveness detection for secure login.</h1>
+    <p>
+      A research-grade authentication system combining 512-dimensional ArcFace embeddings
+      with blink-based anti-spoofing detection. Face templates are encrypted with Fernet
+      (AES-128-CBC + HMAC) and never stored as raw images.
+    </p>
+    <div class="cta">
+      <a class="btn btn-primary" href="{{ url_for('register_page') }}">▸ Enroll a new user</a>
+      <a class="btn btn-ghost" href="{{ url_for('login_page') }}">Sign in</a>
+    </div>
+  </div>
+
+  <h2>How the pipeline defends the login</h2>
+  <div class="features">
+    <div class="feature">
+      <div class="num">01</div>
+      <h3>Password factor (PBKDF2-SHA256)</h3>
+      <p>The face is never the only barrier. A hashed password gate runs first, with 200 000 iterations and per-user salts.</p>
+    </div>
+    <div class="feature">
+      <div class="num">02</div>
+      <h3>Blink detection via EAR</h3>
+      <p>Eye Aspect Ratio tracked frame-by-frame. Printed photos can't blink — the threshold drop is the tell.</p>
+    </div>
+    <div class="feature">
+      <div class="num">03</div>
+      <h3>Three-blink challenge</h3>
+      <p>Server requires three deliberate blinks within the challenge window. Single-frame eye flicker doesn't count — the EAR drop must persist across consecutive frames.</p>
+    </div>
+    <div class="feature">
+      <div class="num">04</div>
+      <h3>512-d ArcFace embedding match</h3>
+      <p>ArcFace ResNet-50 (Deng et al., CVPR 2019) embeddings compared against 3 enrolled samples by cosine distance. Default tolerance 0.40, tunable per experiment.</p>
+    </div>
+    <div class="feature">
+      <div class="num">05</div>
+      <h3>Encrypted templates at rest</h3>
+      <p>Embeddings stored as Fernet-encrypted blobs — an attacker with file access still can't reconstruct identities.</p>
+    </div>
+    <div class="feature">
+      <div class="num">06</div>
+      <h3>Lockout + full audit log</h3>
+      <p>5 failed attempts = 15 min lockout. Every event (login, liveness fail, face mismatch) is logged for review.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}
