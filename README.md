@@ -161,27 +161,14 @@ This shows a strong separation between genuine and imposter scores at the select
 
 ---
 
-### Option A — Run from ZIP
-
 ```bash
 cd biometric_auth
-python3 -m venv venv
+python3.12 -m venv venv
 source venv/bin/activate        # Windows: venv\Scripts\activate
 pip install --upgrade pip
 pip install -r requirements.txt
 python app.py
-Open:  
-http://127.0.0.1:5000
 ```
-
----
-
-### Option B — Run from GitHub
-
-Repository:  
-https://github.com/karimk223/Network-Security-Karim-Jalal-Programming-Project
-
-Download ZIP and follow the same steps as above.
 
 ---
 
