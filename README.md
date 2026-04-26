@@ -160,7 +160,9 @@ Use a newer version if available:
 
 ```bash
 python3.12 -m venv venv
-source venv/bin/activate
+venv\Scripts\activate     # Mac: source venv/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
 python app.py
 ```
 
