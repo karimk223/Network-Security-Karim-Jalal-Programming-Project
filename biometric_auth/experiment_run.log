@@ -1,0 +1,36 @@
+[E0] Building embeddings from: experiments/dataset
+    skip experiments/dataset/jalal/jalal5.jpg: multiple_faces
+    skip experiments/dataset/karim/karim2.jpg: no_face
+    skip experiments/dataset/karim/karim3.jpg: no_face
+    skip experiments/dataset/karim/karim4.jpg: no_face
+    skip experiments/dataset/karim/karim5.jpg: no_face
+    -> 2 persons, 9 images usable
+
+[E1] Genuine vs impostor distance distribution
+    genuine : {'n': 16, 'mean': 0.40956729868199426, 'std': 0.2969623492107638, 'min': 0.06895730069175476, 'max': 1.0244575298989265}
+    impostor: {'n': 20, 'mean': 1.0657626676782832, 'std': 0.0542290449540437, 'min': 0.9732448422569473, 'max': 1.160200691318984}
+
+[E2] FAR / FRR sweep across tolerance values
+    tol=0.20  FAR=0.0000  FRR=0.8125  Acc=0.6389
+    tol=0.25  FAR=0.0000  FRR=0.7500  Acc=0.6667
+    tol=0.30  FAR=0.0000  FRR=0.5000  Acc=0.7778
+    tol=0.35  FAR=0.0000  FRR=0.4375  Acc=0.8056
+    tol=0.40  FAR=0.0000  FRR=0.2500  Acc=0.8889
+    tol=0.45  FAR=0.0000  FRR=0.1875  Acc=0.9167
+    tol=0.50  FAR=0.0000  FRR=0.1875  Acc=0.9167
+    tol=0.55  FAR=0.0000  FRR=0.1875  Acc=0.9167
+    tol=0.60  FAR=0.0000  FRR=0.1875  Acc=0.9167
+    Approx EER near tol=0.45: FAR=0.0000 FRR=0.1875
+
+[E3] Enrollment cost
+    embed extract: 147.4 ± 105.4 ms
+    encrypt:       5.236 ± 14.648 ms
+
+[E4] Verification latency (extract + match)
+    verify: 117.7 ± 34.7 ms (n=2)
+
+[E5] Anti-spoofing: photo-attack simulation
+    blinks detected: 0  challenge met: True  PASSED=False
+    (legit) blinks: 3  challenge met: True  PASSED=True
+
+Wrote: experiments/results.json

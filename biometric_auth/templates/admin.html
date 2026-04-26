@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Audit · BioAuth{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="eyebrow mono" style="color: var(--accent); font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 12px;">▸ security audit</div>
+  <h1 style="margin-bottom: 8px;">Audit log &amp; attack telemetry</h1>
+  <p style="color: var(--fg-dim); margin-bottom: 20px;">Every authentication event is logged. Failed liveness checks and face mismatches are flagged as potential spoofing attempts.</p>
+  <div style="margin-bottom: 32px;">
+    <a href="{{ url_for('dashboard') }}" class="btn btn-ghost">← Back to dashboard</a>
+  </div>
+  <div class="metric-grid" id="metrics">
+    <div class="metric"><div class="label">Registered users</div><div class="value info" id="m-users">–</div></div>
+    <div class="metric"><div class="label">Successful logins</div><div class="value ok" id="m-ok">–</div></div>
+    <div class="metric"><div class="label">Failed logins</div><div class="value err" id="m-fail">–</div></div>
+    <div class="metric"><div class="label">Liveness failures</div><div class="value warn" id="m-live">–</div></div>
+    <div class="metric"><div class="label">Face mismatches</div><div class="value warn" id="m-mis">–</div></div>
+    <div class="metric"><div class="label">Total events</div><div class="value" id="m-total">–</div></div>
+  </div>
+
+  <h2>Recent events</h2>
+  <table class="table" style="margin-top: 12px;">
+    <thead>
+      <tr><th>Time (UTC)</th><th>Type</th><th>User</th><th>Status</th><th>IP</th><th>Details</th></tr>
+    </thead>
+    <tbody id="events-body">
+      <tr><td colspan="6" style="text-align:center; color: var(--fg-muted);">Loading...</td></tr>
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function load() {
+  const s = await api('/api/stats');
+  if (s.data.ok) {
+    const st = s.data.stats;
+    $('#m-users').textContent = st.registered_users;
+    $('#m-ok').textContent    = st.successful_logins;
+    $('#m-fail').textContent  = st.failed_logins;
+    $('#m-live').textContent  = st.liveness_failures;
+    $('#m-mis').textContent   = st.face_mismatches;
+    $('#m-total').textContent = st.total_events;
+  }
+  const e = await api('/api/events?limit=50');
+  const tbody = $('#events-body');
+  tbody.innerHTML = '';
+  if (!e.data.ok || !e.data.events.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--fg-muted);">no events yet</td></tr>';
+    return;
+  }
+  for (const ev of e.data.events) {
+    const tr = document.createElement('tr');
+    const ts = ev.timestamp ? ev.timestamp.slice(0, 19).replace('T', ' ') : '-';
+    const statusCls = ev.success ? 'success' : 'failed';
+    const statusText = ev.success ? 'OK' : 'FAIL';
+    const details = [];
+    if (ev.reason) details.push(ev.reason);
+    if (ev.best_distance !== undefined && ev.best_distance !== null) details.push(`d=${Number(ev.best_distance).toFixed(3)}`);
+    tr.innerHTML = `
+      <td>${ts}</td>
+      <td>${ev.type || '-'}</td>
+      <td>${ev.username || '-'}</td>
+      <td class="${statusCls}">${statusText}</td>
+      <td>${ev.ip || '-'}</td>
+      <td>${details.join(' · ') || '-'}</td>`;
+    tbody.appendChild(tr);
+  }
+}
+load();
+setInterval(load, 5000);
+</script>
+{% endblock %}
