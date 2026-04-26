@@ -1,52 +1,37 @@
 # BioAuth — Multi-Factor Biometric Authentication System
 
-CSC 437 — Network Security · Programming Project · Spring 2026
+CSC 437 — Network Security  
+Programming Project — Spring 2026  
 
-A facial-authentication system combining three independent factors: password verification, active liveness detection, and face embedding matching. The system includes encrypted biometric storage and a complete security audit log.
+BioAuth is a secure authentication system combining three factors:
+- Password verification  
+- Active liveness detection (blink-based)  
+- Face embedding matching  
+
+The system also includes encrypted biometric storage and a complete security audit log.
 
 ---
 
-## Project Topic
+## Project Overview
 
-This project implements Topic 6: Biometric Security from the course project manual. It uses ArcFace ResNet-50 (CVPR 2019), a state-of-the-art face recognition model, combined with multi-factor authentication and anti-spoofing techniques.
+This project implements a biometric security system using a multi-factor authentication approach.  
+It combines modern face recognition with liveness detection and secure credential storage to simulate a real-world authentication system.
 
 ---
 
 ## Key Features
 
-### Face Recognition
-- ArcFace ResNet-50 (ONNX Runtime)
-- 512-dimensional embeddings
+- ArcFace ResNet-50 face recognition (512-dimensional embeddings)
 - Cosine similarity matching
-
-### Liveness Detection
-- Eye Aspect Ratio (EAR) using MediaPipe FaceMesh
-- Requires three deliberate blinks to pass authentication
-
-### Secure Storage
-- Encrypted embeddings using Fernet (AES-128-CBC + HMAC-SHA256)
-- Passwords hashed using PBKDF2-SHA256 (200,000 iterations with per-user salt)
-
-### Multi-Factor Authentication
-- Password verification followed by biometric verification
-- Prevents authentication using a single compromised factor
-
-### Security Logging
-- JSON audit log tracks:
-  - Login attempts
-  - Liveness results
-  - Face match distances
-  - Account lockouts
-
-### Configurable Security Parameters
-- Face match tolerance
-- Blink detection threshold
-- Lockout policy
-- FAR/FRR tuning
+- Blink-based liveness detection using MediaPipe FaceMesh
+- Encrypted face template storage (Fernet)
+- Secure password hashing (PBKDF2-SHA256)
+- Multi-factor authentication (password + biometrics)
+- Session logging and audit tracking
+- Configurable security thresholds
 
 ---
 
-## System Architecture
 ## System Architecture
 
 ```
@@ -84,68 +69,49 @@ Flask Backend (API)
 ## Authentication Pipeline
 
 ### Registration
-1. User enters username and password (minimum 8 characters)
-2. Captures three face samples via webcam
-3. System:
-   - Detects face using YuNet
-   - Aligns face using 5-point landmarks
-   - Generates 512-dimensional embeddings
-4. Validates consistency between samples using cosine distance
-5. Stores encrypted embeddings and hashed password
-
----
+1. User enters username and password  
+2. Captures three face samples  
+3. System generates embeddings  
+4. Validates consistency  
+5. Stores encrypted templates and hashed password  
 
 ### Login Process
 
-#### Step 1 — Password Verification
-- PBKDF2 hash verification
-- If successful, a liveness challenge is issued
+Step 1 — Password Verification  
+- Validates password using PBKDF2  
 
-#### Step 2 — Liveness Detection
-- Webcam frames streamed at approximately 4 FPS
-- Blink detection using Eye Aspect Ratio
-- Requires three valid blinks
+Step 2 — Liveness Detection  
+- Detects blinks using Eye Aspect Ratio  
+- Requires three valid blinks  
 
-#### Step 3 — Face Matching
-- Final frame captured
-- Embedding generated and compared with stored templates
-- Authentication succeeds if distance is below threshold
+Step 3 — Face Matching  
+- Captures final frame  
+- Compares embeddings  
+- Grants access if within threshold  
 
 ---
 
 ## Security Properties
 
-| Threat                          | Mitigation                                      |
-|--------------------------------|------------------------------------------------|
-| Password compromise            | Face matching still required                   |
-| Photo spoofing                 | Liveness detection prevents static attacks     |
-| Stolen database                | Embeddings encrypted at rest                   |
-| Brute-force attempts           | Lockout after 5 failed attempts                |
-| Replay attacks                 | Single-use, time-limited tokens                |
-| CSRF                           | SameSite and HttpOnly cookies                  |
-
----
-
-## Experimental Results
-
-- Imposter (correct password + liveness): rejected  
-  - Cosine distance: 0.886  
-
-- Legitimate user: accepted  
-  - Distance range: 0.06 – 0.15  
-
-This shows a strong separation between genuine and imposter scores at the selected threshold.
+| Threat                   | Protection                           |
+|------------------------|--------------------------------------|
+| Password compromise     | Requires biometric match             |
+| Photo spoofing          | Blink-based liveness detection       |
+| Database breach         | Encrypted templates                  |
+| Brute-force attempts    | Lockout after multiple failures      |
+| Replay attacks          | Time-limited tokens                  |
+| CSRF                    | Secure session cookies               |
 
 ---
 
 ## Tech Stack
 
-- Python 3.10+
+- Python 3.10+ (recommended: Python 3.12)
 - Flask
-- ArcFace ResNet-50 (ONNX)
-- OpenCV YuNet
+- ArcFace (ONNX Runtime)
+- OpenCV (YuNet)
 - MediaPipe FaceMesh
-- Fernet Encryption
+- Cryptography (Fernet)
 - PBKDF2-HMAC-SHA256
 - HTML / CSS / JavaScript
 
@@ -155,41 +121,73 @@ This shows a strong separation between genuine and imposter scores at the select
 
 ### Prerequisites
 
-- Python 3.10 or newer
-- Webcam
-- macOS, Linux, or Windows
+- Python **3.10 or newer** (required)  
+- Webcam  
+- macOS, Linux, or Windows  
 
 ---
 
+### Steps to Run
+
 ```bash
 cd biometric_auth
-python3.12 -m venv venv
+
+# Check Python version (must be 3.10+)
+python3 --version
+
+# Create virtual environment
+python3 -m venv venv
+
+# Activate it
 source venv/bin/activate        # Windows: venv\Scripts\activate
+
+# Install dependencies
 pip install --upgrade pip
 pip install -r requirements.txt
+
+# Run the server
+python app.py
+```
+
+Open in browser:
+http://127.0.0.1:5000
+
+---
+
+### If Python version is below 3.10
+
+Use a newer version if available:
+
+```bash
+python3.12 -m venv venv
+source venv/bin/activate
 python app.py
 ```
 
 ---
 
-### First Run Note
+## First Run Note
 
-On first launch, the system downloads ONNX models (~166 MB) into `data/models/`. This may take a few minutes.
+On first launch, the system downloads required ONNX models (~166 MB).  
+This may take 1–3 minutes depending on your internet connection.
 
 ---
 
 ## Troubleshooting
 
-- Python errors during installation  
+- Python errors  
   → Ensure Python version is 3.10 or newer  
 
 - Camera not working  
-  → Use http://127.0.0.1:5000 (not external URL)  
+  → Use http://127.0.0.1:5000 (local access required)  
 
 - Model download fails  
-  → Check connection and rerun application
+  → Check internet connection and restart the application  
 
-Repository Structure:
+---
+
+## Repository Structure
+
 ```
 biometric_auth/
 ├── app.py
@@ -204,17 +202,27 @@ biometric_auth/
 └── data/ (created on first run)
 ```
 
-Limitations
-Software-based liveness can be bypassed using advanced video attacks
-Encryption key stored locally with data
-Performance affected by poor lighting or occlusion
-Future Work
-Hardware-based liveness detection (depth or IR sensors)
-External key management (KMS or HSM)
-Improved robustness under challenging conditions
-Authors
+---
 
-Karim Khalil
-Jalal Al Arab
+## Limitations
+
+- Software-based liveness can be bypassed by advanced video attacks  
+- Encryption key is stored locally  
+- Performance may degrade under poor lighting  
+
+---
+
+## Future Work
+
+- Hardware-based liveness detection (depth / IR sensors)  
+- External key management (KMS / HSM)  
+- Improved robustness and accuracy  
+
+---
+
+## Authors
+
+Karim Khalil  
+Jalal Al Arab  
 
 Instructor: Dr. Khaleel Mershad
