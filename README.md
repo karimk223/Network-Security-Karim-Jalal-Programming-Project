@@ -203,6 +203,7 @@ On first launch, the system downloads ONNX models (~166 MB) into `data/models/`.
   → Check connection and rerun application
 
 Repository Structure:
+```
 biometric_auth/
 ├── app.py
 ├── config.py
@@ -214,6 +215,7 @@ biometric_auth/
 ├── templates/
 ├── static/
 └── data/ (created on first run)
+```
 
 Limitations
 Software-based liveness can be bypassed using advanced video attacks
