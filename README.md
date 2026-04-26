@@ -1,3 +1,4 @@
+IMPORTANT: Follow the "Running the Project" section below before launching the application.
 # BioAuth — Multi-Factor Biometric Authentication System
 
 CSC 437 — Network Security  
